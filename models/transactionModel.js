@@ -25,7 +25,7 @@ const transactionSchema = mongoose.Schema({
     },
     balance: {
         type: Number,
-        required: true,
+        // required: true,
     },
     sale: {
         type: mongoose.Schema.Types.ObjectId,

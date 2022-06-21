@@ -9,10 +9,17 @@ const saleSchema = mongoose.Schema({
     products: [
         {
             item: String,
-            quantity: Number,
-            price: Number,
+            quantity: {
+                type: Number,
+                required: true
+            },
+            price: {
+                type: Number,
+                required: true
+            },
             subtotal: {
                 type: Number,
+                required: true,
                 default: function () {
                     return this.quantity * this.price
                 }
@@ -21,10 +28,12 @@ const saleSchema = mongoose.Schema({
     ],
     date: {
         type: Date,
+        required: true,
         default: new Date()
     },
     total: {
         type: Number,
+        required: true,
         default: function () {
             let amount = 0;
             this.products.forEach(product => {
@@ -51,6 +60,7 @@ const saleSchema = mongoose.Schema({
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
+        required: true,
         ref: "User"
     },
 }, opts)

@@ -27,34 +27,58 @@ exports.getSale = catchAsync(async (req, res, next) => {
 });
 
 exports.createSale = catchAsync(async (req, res, next) => {
-    const createdSale = await Sale(req.body);
 
-    const customer = createdSale.customer && await Customer.findById(createdSale.customer).populate("transactions");
-    const debit = createdSale.paymentType == 'invoice' ? createdSale.total : 0
-    const credit = createdSale.paymentType == 'cash' ? createdSale.total : 0;
-    const transaction = await Transaction({
-        description: createdSale.description ? createdSale.description : `Customer Sales invoice #${createdSale.saleNumber}`,
-        sale: createdSale.id,
+    // generate new sale model
+    const sale = new Sale(req.body);
+
+    // validate sale, if error send error message
+    let saleError = sale.validateSync();
+    if (saleError) {
+        return next(new AppError(saleError.message), saleError.status)
+    }
+
+    // get customer incase sale is invoiced
+    const customer = await Customer.findById(sale.customer).populate("transactions");
+
+    // generate debit, credit and description values for the transaction
+    const debit = sale.paymentType == 'invoice' ? sale.total : 0
+    const credit = sale.paymentType == 'cash' ? sale.total : 0;
+    const description = sale.description ? sale.description : `Customer Sales invoice #${sale.saleNumber}`;
+
+    // generate new transaction model
+    const transaction = new Transaction({
+        description,
+        sale: sale.id,
         credit,
         debit,
         customer: customer && customer.id,
-        status: createdSale.paymentType,
+        status: sale.paymentType,
         type: "sale",
-        user: createdSale.user,
+        user: sale.user,
         balance: customer && customer.balance + debit
     })
 
+    // validate the new transaction, if error send error message
+    let transactionError = sale.validateSync();
+    if (transactionError) {
+        return next(new AppError(transactionError.message), transactionError.status)
+    }
+
+    // if sale is invoiced, add transaction the transactions field in the customer model
     if (customer) {
         customer.transactions.push(transaction);
     }
 
-    createdSale.save();
+    // if sale and transaction validated, save both in the database
+    sale.save();
     transaction.save();
     customer && customer.save();
+
+    // send success Message, with the created sale
     res.status(201).json({
         status: "Success",
         data: {
-            createdSale,
+            createdSale: sale,
         },
     });
 });
