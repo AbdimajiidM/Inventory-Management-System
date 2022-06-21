@@ -15,12 +15,7 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
-    privillages: [
-        {
-            name: String,
-            access: Array(String)
-        }
-    ]
+    privillages: Array,
 }, opts);
 
 

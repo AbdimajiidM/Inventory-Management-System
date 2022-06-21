@@ -3,7 +3,13 @@ const Customer = require("../models/customerModel");
 const AppError = require("../utils/appError");
 
 exports.getAllCustomers = catchAsync(async (req, res, next) => {
-    const customers = await Customer.find().populate("transactions");
+    const customers = await Customer.find().populate({
+        path: 'transactions',
+        populate: {
+            path: 'sale',
+            model: 'Sale',
+        }
+    });
     res.status(200).json({
         message: "Sucess",
         count: customers.length,
@@ -14,7 +20,7 @@ exports.getAllCustomers = catchAsync(async (req, res, next) => {
 });
 
 exports.getCustomer = catchAsync(async (req, res, next) => {
-    const customer = await Customer.findById(req.params.id);
+    const customer = await Customer.findById(req.params.id).populate("transactions");
     res.status(200).json({
         message: "Sucess",
         data: {

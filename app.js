@@ -7,7 +7,6 @@ const xss = require("xss-clean")
 
 const globalErrorHandler = require('./controllers/errorController')
 
-
 const userRoutes = require("./routes/userRoutes");
 const employeeRoutes = require("./routes/employeeRoutes")
 const companyInfoRoutes = require("./routes/companyInfoRoutes")

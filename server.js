@@ -5,6 +5,8 @@ dotenv.config({ path: "./config.env" });
 const app = require("./app");
 const AppError = require("./utils/appError");
 
+
+
 // variables from enviroument variables
 const port = process.env.PORT || 80;
 const DB = process.env.DATABASE_NAME;
@@ -20,11 +22,11 @@ var connection = mongoose.createConnection(url);
 connection.on('open', function () {
   new Admin(connection.db).listDatabases(function (err, result) {
     if (!DB) {
-      throw new Error('No Connection Setting was found!');
+      throw new AppError("No conncetion Setting was found", 400)
     }
     var db = result.databases.filter((database) => database.name === DB);
     if (db.length < 1) {
-      throw new Error(`Database Connection Error, ${DB} was not found!`)
+      throw new AppError(`Database Connection Error, ${DB} was not found!`, 400)
     }
   });
 });

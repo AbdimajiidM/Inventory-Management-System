@@ -1,7 +1,7 @@
 const catchAsync = require("../utils/catchAsync");
 const Transaction = require("../models/transactionModel");
 const createTransactionFn = require("./functions/createTransactionFn")
-// const cancelTransactionFn = require("./functions/cancelTransactinFn");
+
 const AppError = require("../utils/appError");
 
 
@@ -43,13 +43,5 @@ exports.createTransaction = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.cancelTransaction = catchAsync(async (req, res, next) => {
-  const transactionId = req.params.id;
-  const response = await cancelTransactionFn(transactionId, req, res, next);
 
-  res.status(response.statusCode).json({
-    status: "success",
-    response,
-  });
-});
 

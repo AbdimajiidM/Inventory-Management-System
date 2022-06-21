@@ -6,18 +6,18 @@ const AppError = require("../../utils/appError")
 async function createTransactionFn(transaction, req, res, next) {
 
     try {
-        // get student with transaction refrece ID
+        // get Customer with transaction Customer ID
         const customer = await Customer.findById(transaction.customer).populate("transactions");
-        if (!customer) return next(AppError('No Customer found with that ID', 400));
+        if (!customer) return next(new AppError('No Customer found with that ID', 400));
 
         const balance = transaction.credit ? customer.balance - transaction.credit : customer.balance + transaction.debit
 
-        // create transaction with student current balance
+        // create transaction with Customer current balance
         const createdTransaction = await Transaction.create({ ...transaction, balance });
 
-        // add transaction id as refrence in the student document
+        // add transaction id as refrence in the Customer document
         customer.transactions.push(createdTransaction._id);
-        // save the student with updated credit or debit account
+        // save the Customer with updated credit or debit account
         await customer.save();
 
         // return created transaction
@@ -29,6 +29,7 @@ async function createTransactionFn(transaction, req, res, next) {
         };
     } catch (error) {
         // return error response
+        return next(new AppError(error.message), error.statusCode)
         return {
             statusCode: 400,
             status: "failed",
