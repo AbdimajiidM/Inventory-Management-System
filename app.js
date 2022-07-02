@@ -15,6 +15,11 @@ const customerRoutes = require("./routes/customerRoutes");
 const saleRoutes = require("./routes/saleRoutes")
 const transactionRoutes = require("./routes/transactionRoutes")
 const app = express();
+const cors = require('cors');
+
+app.use(cors({
+    origin:  'http://localhost:3000'
+}));
 
 // 1) MIDDLEWARES
 

@@ -51,6 +51,22 @@ customerSchema.virtual('balance').get(function () {
 });
 
 
+// create a virtual property 'status' that is computed from deadline
+customerSchema.virtual('status').get(function () {
+    const today = new Date();
+    let status;
+    if (this.balance != 0) {
+        if (this.deadline > today) {
+            status = "Pending"
+        } else if (this.deadline < today) {
+            status = "Late"
+        }
+    } else {
+        status = 'Clear'
+    }
+    return status;
+});
+
 
 // auto generate Customer ID
 customerSchema.pre("validate", async function (next) {

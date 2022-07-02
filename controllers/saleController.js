@@ -43,7 +43,7 @@ exports.createSale = catchAsync(async (req, res, next) => {
     // generate debit, credit and description values for the transaction
     const debit = sale.paymentType == 'invoice' ? sale.total : 0
     const credit = sale.paymentType == 'cash' ? sale.total : 0;
-    const description = sale.description ? sale.description : `Customer Sales invoice #${sale.saleNumber}`;
+    const description = sale.description ? sale.description : `Customer Sales invoice`;
 
     // generate new transaction model
     const transaction = new Transaction({

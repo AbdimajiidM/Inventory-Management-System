@@ -44,10 +44,7 @@ const contactSchema = {
   },
   phone: {
     type: String,
-  },
-  status: {
-    type: String
-  },
+  }
 };
 
 module.exports = contactSchema;

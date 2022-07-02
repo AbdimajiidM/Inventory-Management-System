@@ -10,10 +10,8 @@ const { GridFsStorage } = require('multer-gridfs-storage');
 
 const app = express();
 
-
-
 // Mongo URI
-const mongoURI = 'mongodb://localhost:27017/schoolAPI';
+const mongoURI = `${process.env.MONGO_URL}/${process.env.DATABASE_NAME}`;
 
 // Create storage engine
 const storage = new GridFsStorage({
@@ -21,6 +19,7 @@ const storage = new GridFsStorage({
     file: (req, file) => {
         return new Promise((resolve, reject) => {
             const filename = file.originalname;
+            console.log(filename)
             const fileInfo = {
                 filename: filename,
                 bucketName: 'uploads'
@@ -52,8 +51,8 @@ exports.createCompanyInfo = catchAsync(async (req, res, next) => {
     const info = await CompanyInfo.find();
     if (info.length) {
         return next(new AppError("all ready exist, please update"), 400)
-
     }
+
     const companyInfo = await CompanyInfo.create({ ...req.body, imageName: req.file.filename });
 
     res.status(201).json({
@@ -65,9 +64,16 @@ exports.createCompanyInfo = catchAsync(async (req, res, next) => {
 });
 
 exports.getCompanyInfo = catchAsync(async (req, res, next) => {
-    const image = await getImage("jaamcad.jpg")
-    let companyInfo = await CompanyInfo.findOne();
 
+    let companyInfo = await CompanyInfo.findOne();
+    if (!companyInfo) {
+        return res.status(200).json({
+            status: "success",
+            message: "No compnay Information Found",
+            data: null
+        })
+    }
+    const image = await getImage(companyInfo.imageName);
     res.status(200).json({
         message: "success",
         data: {
@@ -78,7 +84,8 @@ exports.getCompanyInfo = catchAsync(async (req, res, next) => {
 });
 
 exports.updateCompanyInfo = catchAsync(async (req, res, next) => {
-    const updatedCompanyInfo = await CompanyInfo.findOneAndUpdate({}, { ...req.body, imageName: req.file.filename }, {
+    const imageName = req.file && req.file.filename
+    const updatedCompanyInfo = await CompanyInfo.findOneAndUpdate({}, { ...req.body, imageName }, {
         new: true,
         runValidators: true,
     })
@@ -91,31 +98,29 @@ exports.updateCompanyInfo = catchAsync(async (req, res, next) => {
     });
 })
 
-const getImage = (fileName) => {
-    return File.find({ filename: fileName })
-        .then((file) => {
-            const id = mongoose.Types.ObjectId(file[0]._id);
-            console.log("File " + file[0].contentType)
-            return Chunk.find({ files_id: id })
-                .then((chunks) => {
-                    if (!chunks || chunks.length === 0) {
-                        console.log("No data found");
-                    }
-                    let fileData = [];
-                    for (let i = 0; i < chunks.length; i++) {
-                        //This is in Binary JSON or BSON format, which is stored
-                        //in fileData array in base64 endocoded string format
-                        fileData.push(chunks[i].data.toString('base64'));
-                    }
+const getImage = async (fileName) => {
 
-                    //Display the chunks using the data URI format
-                    return (finalFile = "data:" + file[0].contentType + ";base64," + fileData.join(""));
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+    try {
+        const file = await File.find({ filename: fileName });
+
+        const id = mongoose.Types.ObjectId(file[0]._id);
+
+        const chunks = await Chunk.find({ files_id: id });
+
+        if (!chunks || chunks.length === 0) {
+            console.log("No data found");
+        }
+
+        let fileData = [];
+        for (let i = 0; i < chunks.length; i++) {
+            //This is in Binary JSON or BSON format, which is stored
+            //in fileData array in base64 endocoded string format
+            fileData.push(chunks[i].data.toString('base64'));
+        }
+
+        //Display the chunks using the data URI format
+        return (finalFile = "data:" + file[0].contentType + ";base64," + fileData.join(""));
+    } catch (error) {
+        return new AppError(error.message, error.statusCode)
+    }
 };

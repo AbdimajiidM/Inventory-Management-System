@@ -10,7 +10,7 @@ const AppError = require("./utils/appError");
 // variables from enviroument variables
 const port = process.env.PORT || 80;
 const DB = process.env.DATABASE_NAME;
-const url = `mongodb://localhost:27017/${DB}`
+const url = `${process.env.MONGO_URL}/${DB}`
 const user = process.env.DATABASE_USER;
 const pass = process.env.DATABASE_PASSWORD;
 const authSource = process.env.AUTHSOURCE;
