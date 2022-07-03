@@ -1,4 +1,4 @@
-"# Inventory-Management-System" 
+# Inventory-Management-System
 # REST API
 * Backend default port: 3000
 * Base address: http://<HOST_NAME>:3000/api/v1/

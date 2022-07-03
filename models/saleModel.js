@@ -65,7 +65,18 @@ const saleSchema = mongoose.Schema({
 }, opts)
 
 
-
+// create a virtual property `invoice` that's computed from `custome invoice transactions` in the transaction document
+saleSchema.virtual('invoice').get(function () {
+    let number;
+    if (this.saleNumber / 10 < 1) {
+        number = `00${this.saleNumber}`
+    } else if (this.saleNumber / 100 < 1) {
+        number = `0${this.saleNumber}`
+    } else {
+        number = this.saleNumber
+    }
+    return `INV-${number}`;
+});
 
 
 // auto generate Product ID
