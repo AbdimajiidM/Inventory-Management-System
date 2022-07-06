@@ -12,13 +12,15 @@ const employeeRoutes = require("./routes/employeeRoutes")
 const companyInfoRoutes = require("./routes/companyInfoRoutes")
 const productRoutes = require("./routes/productRoutes")
 const customerRoutes = require("./routes/customerRoutes");
-const saleRoutes = require("./routes/saleRoutes")
+const vendorRoutes = require("./routes/vendorRoutes")
+const saleRoutes = require("./routes/saleRoutes");
+const purchaseRoutes = require("./routes/purchaseRoutes")
 const transactionRoutes = require("./routes/transactionRoutes")
 const app = express();
 const cors = require('cors');
 
 app.use(cors({
-    origin:  'http://localhost:3000'
+  origin: 'http://localhost:3000'
 }));
 
 // 1) MIDDLEWARES
@@ -46,7 +48,9 @@ app.use('/api/v1/employees', employeeRoutes);
 app.use('/api/v1/companyInfo', companyInfoRoutes)
 app.use('/api/v1/products', productRoutes)
 app.use('/api/v1/customers', customerRoutes)
-app.use('/api/v1/sales', saleRoutes)
+app.use('/api/v1/vendors', vendorRoutes)
+app.use('/api/v1/sales', saleRoutes);
+app.use("/api/v1/purchases", purchaseRoutes);
 app.use("/api/v1/transactions", transactionRoutes)
 
 app.all('*', (req, res, next) => {

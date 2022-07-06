@@ -31,8 +31,15 @@ const productSchema = mongoose.Schema({
     }
 }, opts)
 
+// create a virtual property `isAvailable` that's computed from `quantity`
+productSchema.virtual('isAvailable').get(function () {
+    return this.quantity ? true : false;
+});
 
-
+// create a virtual property `status` that's computed from `quantity`
+productSchema.virtual('status').get(function () {
+    return this.quantity ? 'available' : 'unavailable';
+});
 
 // auto generate Product ID
 productSchema.pre("validate", async function (next) {

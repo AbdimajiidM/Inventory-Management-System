@@ -3,7 +3,6 @@ const saleController = require('./../controllers/saleController');
 
 const router = express.Router();
 
-
 router
     .route('/')
     .get(saleController.getAllSales)

@@ -1,12 +1,12 @@
 const catchAsync = require("../utils/catchAsync");
 const Transaction = require("../models/transactionModel");
 const createTransactionFn = require("./functions/createTransactionFn")
-
+const APIFeatures = require("../utils/apiFeatures")
 const AppError = require("../utils/appError");
 
-
 exports.getAllTransaction = catchAsync(async (req, res, next) => {
-  const transactions = await Transaction.find().populate('customer').populate("sale");
+  const features = new APIFeatures(Transaction.find().populate('customer').populate("sale").populate("purchase"), req.query).filter().sort().limitFields().paginate()
+  const transactions = await features.query;
   res.status(200).json({
     message: "Sucess",
     count: transactions.length,

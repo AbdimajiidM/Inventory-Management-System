@@ -1,49 +1,48 @@
 const catchAsync = require("./../utils/catchAsync");
-const Customer = require("../models/customerModel");
+const Vendor = require("../models/vendorModel");
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures")
 
-exports.getAllCustomers = catchAsync(async (req, res, next) => {
+exports.getAllVendors = catchAsync(async (req, res, next) => {
     const features = new APIFeatures(await Customer.find().populate({
         path: 'transactions',
         populate: {
-            path: 'sale',
-            model: 'Sale',
+            path: 'purchase',
+            model: 'Purchase',
         }
     }), req.query).filter().sort().limitFields().paginate()
-    const customers = await features.query;
-
+    const vendors = await features.query;
     res.status(200).json({
         message: "Sucess",
-        count: customers.length,
+        count: vendors.length,
         data: {
-            customers,
+            vendors,
         },
     });
 });
 
-exports.getCustomer = catchAsync(async (req, res, next) => {
-    const customer = await Customer.findById(req.params.id).populate("transactions");
+exports.getVendor = catchAsync(async (req, res, next) => {
+    const vendor = await Vendor.findById(req.params.id).populate("transactions");
     res.status(200).json({
         message: "Sucess",
         data: {
-            customer
+            vendor
         },
     });
 });
 
-exports.createCustomer = catchAsync(async (req, res, next) => {
-    const createdCustomer = await Customer.create(req.body)
+exports.createVendor = catchAsync(async (req, res, next) => {
+    const createdVendor = await Vendor.create(req.body)
     res.status(201).json({
         status: "Success",
         data: {
-            createdCustomer,
+            createdVendor,
         },
     });
 });
 
-exports.updateCustomer = catchAsync(async (req, res, next) => {
-    const customer = await Customer.findByIdAndUpdate(req.params.id, req.body, {
+exports.updateVendor = catchAsync(async (req, res, next) => {
+    const vendor = await Vendor.findByIdAndUpdate(req.params.id, req.body, {
         new: true,
         runValidators: true,
     });
@@ -51,7 +50,7 @@ exports.updateCustomer = catchAsync(async (req, res, next) => {
     res.status(201).json({
         status: "Success",
         data: {
-            customer,
+            vendor,
         },
     });
 });

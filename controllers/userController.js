@@ -1,12 +1,13 @@
 const catchAsync = require("./../utils/catchAsync");
 const User = require("../models/userModel");
 const appError = require("../utils/appError");
-
+const APIFeatures = require("../utils/apiFeatures")
 const bcrypt = require('bcrypt');
 
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find().select("-password -__v");
+  const features = new APIFeatures(User.find().select("-password -__v"), req.query).filter().sort().limitFields().paginate()
+  const users = await features.query;
   res.status(200).json({
     message: "Sucess",
     count: users.length,

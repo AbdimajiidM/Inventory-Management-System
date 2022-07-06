@@ -33,6 +33,10 @@ const transactionSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Sale"
     },
+    purchase: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Purchase"
+    },
     customer: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Customer"

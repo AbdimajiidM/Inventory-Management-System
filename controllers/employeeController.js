@@ -1,10 +1,11 @@
 const catchAsync = require("./../utils/catchAsync");
 const Employee = require("../models/employeeModel");
 const appError = require("../utils/appError");
-
+const APIFeatures = require("../utils/apiFeatures")
 
 exports.getAllEmployees = catchAsync(async (req, res, next) => {
-    const employees = await Employee.find();
+    const features = new APIFeatures(Employee.find(), req.query).filter().sort().limitFields().paginate()
+    const employees = await features.query;
     res.status(200).json({
         message: "Sucess",
         count: employees.length,

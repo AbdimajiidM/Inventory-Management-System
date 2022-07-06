@@ -1,11 +1,16 @@
 const catchAsync = require("./../utils/catchAsync");
 const Sale = require("../models/saleModel");
+const Product = require("../models/productModel")
 const Transaction = require("../models/transactionModel");
 const Customer = require("../models/customerModel")
 const AppError = require("../utils/appError");
+const APIFeatures = require("../utils/apiFeatures")
+
+
 
 exports.getAllSales = catchAsync(async (req, res, next) => {
-    const sales = await Sale.find();
+    const features = new APIFeatures(Sale.find(), req.query).filter().sort().limitFields().paginate()
+    const sales = await features.query;
     res.status(200).json({
         message: "Sucess",
         count: sales.length,
@@ -14,6 +19,7 @@ exports.getAllSales = catchAsync(async (req, res, next) => {
         },
     });
 });
+
 
 exports.getSale = catchAsync(async (req, res, next) => {
     const sale = await Sale.findById(req.params.id);
@@ -37,8 +43,19 @@ exports.createSale = catchAsync(async (req, res, next) => {
         return next(new AppError(saleError.message), saleError.status)
     }
 
+    // check if sale products exists in the database, and are availible to sale
+    for (let index = 0; index < sale.products.length; index++) {
+        const product = sale.products[index];
+        const dbProduct = await Product.findOne({ name: product.item });
+        if (!dbProduct || !dbProduct.isAvailable) {
+            console.log(`Database Product: ${dbProduct}`)
+            return next(new AppError(`${product.item} is not available`), 400);
+        }
+    }
+
+
     // get customer incase sale is invoiced
-    const customer = await Customer.findById(sale.customer).populate("transactions");
+    const customer = sale.customer && await Customer.findById(sale.customer).populate("transactions");
 
     // generate debit, credit and description values for the transaction
     const debit = sale.paymentType == 'invoice' ? sale.total : 0
@@ -71,6 +88,15 @@ exports.createSale = catchAsync(async (req, res, next) => {
 
     // if sale and transaction validated, save both in the database
     sale.save();
+
+    // update sold products quantity
+    for (let index = 0; index < sale.products.length; index++) {
+        const soldProduct = sale.products[index];
+        const product = await Product.findOne({ name: soldProduct.item });
+        product.quantity -= soldProduct.quantity;
+        product.save();
+    }
+
     transaction.save();
     customer && customer.save();
 
