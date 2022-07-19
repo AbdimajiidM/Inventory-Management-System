@@ -15,6 +15,18 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.getAvailableProducts = catchAsync(async (req, res, next) => {
+    const features = new APIFeatures(Product.find().where("quantity").gte(0), req.query).filter().sort().limitFields().paginate()
+    const products = await features.query;
+    res.status(200).json({
+        message: "Sucess",
+        count: products.length,
+        data: {
+            products,
+        },
+    });
+});
+
 exports.getProduct = catchAsync(async (req, res, next) => {
     const product = await Product.findById(req.params.id);
     res.status(200).json({

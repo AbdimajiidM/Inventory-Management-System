@@ -4,7 +4,7 @@ const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures")
 
 exports.getAllCustomers = catchAsync(async (req, res, next) => {
-    const features = new APIFeatures(await Customer.find().populate({
+    const features = new APIFeatures(Customer.find().populate({
         path: 'transactions',
         populate: {
             path: 'sale',

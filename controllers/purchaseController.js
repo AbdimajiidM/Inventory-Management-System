@@ -87,7 +87,9 @@ exports.createPurchase = catchAsync(async (req, res, next) => {
         const purchasedProduct = purchase.products[index];
         const product = await Product.findOne({ name: purchasedProduct.item });
         product.quantity += purchasedProduct.quantity;
-        product.save();
+        product.unitPrice = purchasedProduct.unitPrice;
+        product.salePrice = product.salePrice;
+        await product.save();
     }
     transaction.save();
     vendor && vendor.save();

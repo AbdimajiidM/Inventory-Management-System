@@ -5,7 +5,7 @@ const Transaction = require("../models/transactionModel");
 const Customer = require("../models/customerModel")
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures")
-
+const justDate = require('../utils/justDate')
 
 
 exports.getAllSales = catchAsync(async (req, res, next) => {
@@ -20,6 +20,30 @@ exports.getAllSales = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.getSalesByDate = catchAsync(async (req, res, next) => {
+
+    const startDate = new Date(req.body.startDate);
+    const endDate = new Date(req.body.endDate);
+
+    // startDate.setDate(startDate.getDate() - 1);
+    // endDate.setDate(endDate.getDate() + 1);
+
+    const features = new APIFeatures(Sale.find({
+        date: {
+            $gte: justDate(startDate),
+            $lte: justDate(endDate)
+        }
+    }), req.query).filter().sort().limitFields().paginate()
+    const sales = await features.query;
+
+    res.status(200).json({
+        message: "Sucess",
+        count: sales.length,
+        data: {
+            sales
+        },
+    });
+});
 
 exports.getSale = catchAsync(async (req, res, next) => {
     const sale = await Sale.findById(req.params.id);
@@ -36,7 +60,6 @@ exports.createSale = catchAsync(async (req, res, next) => {
 
     // generate new sale model
     const sale = new Sale(req.body);
-
     // validate sale, if error send error message
     let saleError = sale.validateSync();
     if (saleError) {
@@ -47,12 +70,10 @@ exports.createSale = catchAsync(async (req, res, next) => {
     for (let index = 0; index < sale.products.length; index++) {
         const product = sale.products[index];
         const dbProduct = await Product.findOne({ name: product.item });
-        if (!dbProduct || !dbProduct.isAvailable) {
-            console.log(`Database Product: ${dbProduct}`)
+        if (!dbProduct || dbProduct.quantity < 0) {
             return next(new AppError(`${product.item} is not available`), 400);
         }
     }
-
 
     // get customer incase sale is invoiced
     const customer = sale.customer && await Customer.findById(sale.customer).populate("transactions");
@@ -94,7 +115,7 @@ exports.createSale = catchAsync(async (req, res, next) => {
         const soldProduct = sale.products[index];
         const product = await Product.findOne({ name: soldProduct.item });
         product.quantity -= soldProduct.quantity;
-        product.save();
+        await product.save();
     }
 
     transaction.save();

@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const JustADate = require("../utils/justDate")
 const opts = { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 const saleSchema = mongoose.Schema({
     saleNumber: {
@@ -78,6 +78,10 @@ saleSchema.virtual('invoice').get(function () {
     return `INV-${number}`;
 });
 
+saleSchema.virtual('Date').get(function () {
+
+    return JustADate(this.date).toLocaleDateString();
+})
 
 // auto generate Product ID
 saleSchema.pre("validate", async function (next) {
@@ -93,3 +97,6 @@ saleSchema.pre("validate", async function (next) {
 const Sale = mongoose.model('Sale', saleSchema);
 
 module.exports = Sale;
+
+
+

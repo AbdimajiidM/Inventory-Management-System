@@ -32,8 +32,8 @@ const productSchema = mongoose.Schema({
 }, opts)
 
 // create a virtual property `isAvailable` that's computed from `quantity`
-productSchema.virtual('isAvailable').get(function () {
-    return this.quantity ? true : false;
+productSchema.virtual('total').get(function () {
+    return this.quantity * this.unitPrice;
 });
 
 // create a virtual property `status` that's computed from `quantity`

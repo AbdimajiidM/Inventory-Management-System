@@ -41,6 +41,10 @@ const transactionSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Customer"
     },
+    vendor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Vendor"
+    },
     user: {
         type: String,
     },
