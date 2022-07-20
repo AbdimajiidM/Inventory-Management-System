@@ -5,6 +5,7 @@ const Transaction = require("../models/transactionModel");
 const Vendor = require("../models/vendorModel")
 const AppError = require("../utils/appError");
 const APIFeatures = require("../utils/apiFeatures")
+const justDate = require("../utils/justDate");
 
 exports.getAllPurchases = catchAsync(async (req, res, next) => {
     const features = new APIFeatures(Purchase.find(), req.query).filter().sort().limitFields().paginate()
@@ -14,6 +15,28 @@ exports.getAllPurchases = catchAsync(async (req, res, next) => {
         count: purchases.length,
         data: {
             purchases,
+        },
+    });
+});
+
+exports.getPurchasesByDate = catchAsync(async (req, res, next) => {
+
+    const startDate = new Date(req.body.startDate);
+    const endDate = new Date(req.body.endDate);
+
+    const features = new APIFeatures(Purchase.find({
+        date: {
+            $gte: justDate(startDate),
+            $lte: justDate(endDate)
+        }
+    }), req.query).filter().sort().limitFields().paginate()
+    const purchases = await features.query;
+
+    res.status(200).json({
+        message: "Sucess",
+        count: purchases.length,
+        data: {
+            purchases
         },
     });
 });

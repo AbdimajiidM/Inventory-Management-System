@@ -3,6 +3,8 @@ const purchaseController = require('./../controllers/purchaseController');
 
 const router = express.Router();
 
+router.route('/bydate').get(purchaseController.getPurchasesByDate)
+
 
 router
     .route('/')

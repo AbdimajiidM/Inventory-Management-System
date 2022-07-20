@@ -11,6 +11,11 @@ const handleDuplicateFieldsDB = err => {
   return new AppError(message, 400)
 }
 
+const handleRequiredFieldsDB = err => {
+  const field = err.errors.name.properties.path;
+  const message = `field ${field} is required`;
+  return new AppError(message, 400)
+}
 
 
 const sendErrorDev = (err, res) => {
@@ -40,18 +45,17 @@ const sendErrorProd = (err, res) => {
 module.exports = (err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const status = err.status || 'error';
-
   if (process.env.NODE_ENV == 'development') {
+    console.log("development")
     sendErrorDev(err, res);
-  } else if (process.env.NODE_ENV == 'production') {
-
+    // } else if (process.env.NODE_ENV == 'production') {
+  } else {
     let error = { ...err };
     // console.log(error);
 
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
 
     if (error.name === "CastError") error = handleCastErrorDB(error);
-
 
     // console.log(error.errors.email & error.errors.email.kind === "required");
 
