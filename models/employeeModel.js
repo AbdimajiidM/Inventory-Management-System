@@ -16,9 +16,9 @@ const employeeSchema = mongoose.Schema({
     role: {
         type: String
     },
-    salary: {
-        type: Number
-    },
+    // salary: {
+    //     type: Number
+    // },
     status: {
         type: String,
     }

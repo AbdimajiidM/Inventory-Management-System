@@ -22,11 +22,8 @@ exports.getAllSales = catchAsync(async (req, res, next) => {
 
 exports.getSalesByDate = catchAsync(async (req, res, next) => {
 
-    const startDate = new Date(req.body.startDate);
-    const endDate = new Date(req.body.endDate);
-
-    // startDate.setDate(startDate.getDate() - 1);
-    // endDate.setDate(endDate.getDate() + 1);
+    const startDate = new Date(req.params.startDate);
+    const endDate = new Date(req.params.endDate);
 
     const features = new APIFeatures(Sale.find({
         date: {
@@ -71,7 +68,11 @@ exports.createSale = catchAsync(async (req, res, next) => {
         const product = sale.products[index];
         const dbProduct = await Product.findOne({ name: product.item });
         if (!dbProduct || dbProduct.quantity < 0) {
-            return next(new AppError(`${product.item} is not available`), 400);
+            return next(new AppError(`${product.item} is not available`, 400));
+        }
+
+        if (dbProduct.quantity - product.quantity < 0) {
+            return next(new AppError(`Only ${product.quantity} ${product.item} is available`, 400));
         }
     }
 

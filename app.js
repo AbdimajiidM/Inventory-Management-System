@@ -15,7 +15,8 @@ const customerRoutes = require("./routes/customerRoutes");
 const vendorRoutes = require("./routes/vendorRoutes")
 const saleRoutes = require("./routes/saleRoutes");
 const purchaseRoutes = require("./routes/purchaseRoutes")
-const transactionRoutes = require("./routes/transactionRoutes")
+const transactionRoutes = require("./routes/transactionRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes")
 const app = express();
 const cors = require('cors');
 
@@ -52,6 +53,7 @@ app.use('/api/v1/vendors', vendorRoutes)
 app.use('/api/v1/sales', saleRoutes);
 app.use("/api/v1/purchases", purchaseRoutes);
 app.use("/api/v1/transactions", transactionRoutes)
+app.use('/api/v1/dashboard', dashboardRoutes)
 
 app.all('*', (req, res, next) => {
   next(new AppError(`cant't found ${req.originalUrl} on this server`, 404));

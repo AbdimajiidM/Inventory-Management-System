@@ -11,7 +11,7 @@ const { GridFsStorage } = require('multer-gridfs-storage');
 const app = express();
 
 // Mongo URI
-const mongoURI = `${process.env.MONGO_URL}/${process.env.DATABASE_NAME}`;
+const mongoURI = `mongodb+srv://Admin:damlad_admin@cluster0.6dx6pwr.mongodb.net/${process.env.DATABASE_NAME}`;
 
 // Create storage engine
 const storage = new GridFsStorage({

@@ -29,7 +29,7 @@ const saleSchema = mongoose.Schema({
     date: {
         type: Date,
         required: true,
-        default: new Date()
+        default: JustADate(new Date())
     },
     total: {
         type: Number,
@@ -78,10 +78,6 @@ saleSchema.virtual('invoice').get(function () {
     return `INV-${number}`;
 });
 
-saleSchema.virtual('Date').get(function () {
-
-    return JustADate(this.date).toLocaleDateString();
-})
 
 // auto generate Product ID
 saleSchema.pre("validate", async function (next) {

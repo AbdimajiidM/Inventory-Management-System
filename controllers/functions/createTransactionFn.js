@@ -17,7 +17,7 @@ async function createTransactionFn(transaction, req, res, next) {
       (await Vendor.findById(transaction.vendor).populate("transactions"));
 
     // return error if both customer and vendor not found
-    if (!vendor && !cunstomer)
+    if (!vendor && !customer)
       return next(new AppError(" Customer or Vendor not found", 400));
     
     // return error if vendor and customer both found

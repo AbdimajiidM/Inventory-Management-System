@@ -3,7 +3,7 @@ const purchaseController = require('./../controllers/purchaseController');
 
 const router = express.Router();
 
-router.route('/bydate').get(purchaseController.getPurchasesByDate)
+router.route('/bydate/:startDate/:endDate').get(purchaseController.getPurchasesByDate)
 
 
 router
@@ -16,6 +16,5 @@ router
     .get(purchaseController.getPurchase)
     .patch(purchaseController.updatePurchase)
     .delete(purchaseController.deletePurchase);
-
 
 module.exports = router;

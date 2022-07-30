@@ -64,7 +64,7 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
     if (!product) {
         return next(new AppError("No product found with that ID", 404));
     }
-    if (product.quantity) {
+    if (product.quantity && product.quantity>0) {
         return next(new AppError("Product Quantity Must be 0, to delete"), 400)
     }
 

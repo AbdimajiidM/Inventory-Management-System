@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const justDate = require("../utils/justDate");
 
 const opts = { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 
@@ -18,6 +19,10 @@ const purchaseSchema = mongoose.Schema({
                 type: Number,
                 required: true
             },
+            salePrice: {
+                type: Number,
+                required: true
+            },
             subtotal: {
                 type: Number,
                 required: true,
@@ -30,7 +35,7 @@ const purchaseSchema = mongoose.Schema({
     date: {
         type: Date,
         required: true,
-        default: new Date()
+        default: justDate(new Date())
     },
     total: {
         type: Number,

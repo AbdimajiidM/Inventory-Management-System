@@ -21,8 +21,8 @@ exports.getAllPurchases = catchAsync(async (req, res, next) => {
 
 exports.getPurchasesByDate = catchAsync(async (req, res, next) => {
 
-    const startDate = new Date(req.body.startDate);
-    const endDate = new Date(req.body.endDate);
+    const startDate = new Date(req.params.startDate);
+    const endDate = new Date(req.params.endDate);
 
     const features = new APIFeatures(Purchase.find({
         date: {
@@ -56,7 +56,6 @@ exports.createPurchase = catchAsync(async (req, res, next) => {
 
     // generate new purchase model
     const purchase = new Purchase(req.body);
-
     // validate purchase, if error send error message
     let purchaseError = purchase.validateSync();
     if (purchaseError) {
@@ -111,7 +110,7 @@ exports.createPurchase = catchAsync(async (req, res, next) => {
         const product = await Product.findOne({ name: purchasedProduct.item });
         product.quantity += purchasedProduct.quantity;
         product.unitPrice = purchasedProduct.unitPrice;
-        product.salePrice = product.salePrice;
+        product.salePrice = purchasedProduct.salePrice;
         await product.save();
     }
     transaction.save();
