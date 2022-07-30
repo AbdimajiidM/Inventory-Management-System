@@ -16,7 +16,7 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
 });
 
 exports.getAvailableProducts = catchAsync(async (req, res, next) => {
-    const features = new APIFeatures(Product.find().where("quantity").gte(0), req.query).filter().sort().limitFields().paginate()
+    const features = new APIFeatures(Product.find().where("quantity").gt(0), req.query).filter().sort().limitFields().paginate()
     const products = await features.query;
     res.status(200).json({
         message: "Sucess",
@@ -64,7 +64,7 @@ exports.deleteProduct = catchAsync(async (req, res, next) => {
     if (!product) {
         return next(new AppError("No product found with that ID", 404));
     }
-    if (product.quantity && product.quantity>0) {
+    if (product.quantity && product.quantity > 0) {
         return next(new AppError("Product Quantity Must be 0, to delete"), 400)
     }
 

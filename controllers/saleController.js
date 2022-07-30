@@ -53,6 +53,7 @@ exports.getSale = catchAsync(async (req, res, next) => {
     });
 });
 
+
 exports.createSale = catchAsync(async (req, res, next) => {
 
     // generate new sale model

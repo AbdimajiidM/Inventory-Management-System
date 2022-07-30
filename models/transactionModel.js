@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const sale = require("../models/saleModel")
 
 const transactionSchema = mongoose.Schema({
     description: {
