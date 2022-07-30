@@ -74,7 +74,18 @@ const purchaseSchema = mongoose.Schema({
 }, opts)
 
 
-
+// create a virtual property `invoice` that's computed from `custome invoice transactions` in the transaction document
+purchaseSchema.virtual('invoice').get(function () {
+    let number;
+    if (this.purchaseNumber / 10 < 1) {
+        number = `00${this.purchaseNumber}`
+    } else if (this.purchaseNumber / 100 < 1) {
+        number = `0${this.purchaseNumber}`
+    } else {
+        number = this.purchaseNumber
+    }
+    return `INV-${number}`;
+});
 // auto generate Product ID
 purchaseSchema.pre("validate", async function (next) {
     //sorting students
